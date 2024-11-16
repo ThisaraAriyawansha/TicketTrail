@@ -18,7 +18,7 @@ const Registration = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
@@ -26,9 +26,27 @@ const Registration = () => {
       return;
     }
 
-    console.log("Form Data:", formData);
-    alert("Registration successful!");
-    navigate("/login");
+    try {
+      const response = await fetch('http://localhost:5000/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Registration successful!");
+        navigate("/login");
+      } else {
+        alert(data.error || "Registration failed!");
+      }
+    } catch (error) {
+      console.error("Error during registration:", error);
+      alert("An error occurred, please try again.");
+    }
   };
 
   const handleBackButtonClick = () => {
